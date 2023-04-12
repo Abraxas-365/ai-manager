@@ -12,7 +12,7 @@ type PromptTemplate struct {
 	Template         string
 	TemplateFormat   string
 	ValidateTemplate bool
-	PartialVariables []string
+	PartialVariables map[string]interface{}
 }
 
 func (p *PromptTemplate) Format(kwargs map[string]interface{}) (string, error) {
@@ -20,7 +20,13 @@ func (p *PromptTemplate) Format(kwargs map[string]interface{}) (string, error) {
 		return "", fmt.Errorf("unsupported template format: %s", p.TemplateFormat)
 	}
 
-	tmpl, err := template.New("prompt").Parse(p.Template)
+	for k, v := range p.PartialVariables {
+		kwargs[k] = v
+	}
+
+	tmpl, err := template.New("prompt").Funcs(template.FuncMap{
+		"join": strings.Join,
+	}).Parse(p.Template)
 	if err != nil {
 		return "", err
 	}
@@ -34,17 +40,7 @@ func (p *PromptTemplate) Format(kwargs map[string]interface{}) (string, error) {
 	return sb.String(), nil
 }
 
-/*
-- Example
-	inputVariables := []string{"name", "age"}
-	tmpl := "My name is {{.name}} and I am {{.age}} years old."
-	pt := prompt.NewPromptTemplate(inputVariables, tmpl, nil)
-	formatted, err := pt.Format(map[string]interface{}{
-		"name": "John Doe",
-		"age":  30,
-	})
-*/
-func NewPromptTemplate(inputVariables []string, tmpl string, partialVariables []string) *PromptTemplate {
+func NewPromptTemplate(inputVariables []string, tmpl string, partialVariables map[string]interface{}) *PromptTemplate {
 	return &PromptTemplate{
 		InputVariables:   inputVariables,
 		Template:         tmpl,
@@ -54,12 +50,12 @@ func NewPromptTemplate(inputVariables []string, tmpl string, partialVariables []
 	}
 }
 
-func PromptTemplateFromFile(templateFile string, inputVariables []string) (*PromptTemplate, error) {
+func PromptTemplateFromFile(templateFile string, inputVariables []string, partialVariables map[string]interface{}) (*PromptTemplate, error) {
 	templateBytes, err := ioutil.ReadFile(templateFile)
 	if err != nil {
 		return nil, err
 	}
 
 	templateStr := string(templateBytes)
-	return NewPromptTemplate(inputVariables, templateStr, nil), nil
+	return NewPromptTemplate(inputVariables, templateStr, partialVariables), nil
 }
