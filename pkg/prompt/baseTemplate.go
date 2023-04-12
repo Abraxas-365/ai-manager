@@ -34,6 +34,16 @@ func (p *PromptTemplate) Format(kwargs map[string]interface{}) (string, error) {
 	return sb.String(), nil
 }
 
+/*
+- Example
+	inputVariables := []string{"name", "age"}
+	tmpl := "My name is {{.name}} and I am {{.age}} years old."
+	pt := prompt.NewPromptTemplate(inputVariables, tmpl, nil)
+	formatted, err := pt.Format(map[string]interface{}{
+		"name": "John Doe",
+		"age":  30,
+	})
+*/
 func NewPromptTemplate(inputVariables []string, tmpl string, partialVariables []string) *PromptTemplate {
 	return &PromptTemplate{
 		InputVariables:   inputVariables,
