@@ -29,7 +29,10 @@ type IPromptTemplateBuilder interface {
 }
 
 func NewPromptTemplateBuilder() *PromptTemplateBuilder {
-	return &PromptTemplateBuilder{}
+	return &PromptTemplateBuilder{
+		PartialVariables: nil,
+		InputVariables:   nil,
+	}
 }
 func (b *PromptTemplateBuilder) AddInputVariables(inputVariables []string) IPromptTemplateBuilder {
 	b.InputVariables = inputVariables
