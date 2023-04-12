@@ -2,42 +2,54 @@ package prompt
 
 import (
 	"fmt"
-	"regexp"
+	"io/ioutil"
 	"strings"
+	"text/template"
 )
 
 type PromptTemplate struct {
-	Template       string
-	InputVariables []string
+	InputVariables   []string
+	Template         string
+	TemplateFormat   string
+	ValidateTemplate bool
+	PartialVariables []string
 }
 
-func NewPromptTemplate(template string, inputVariables []string) *PromptTemplate {
+func (p *PromptTemplate) Format(kwargs map[string]interface{}) (string, error) {
+	if p.TemplateFormat != "f-string" {
+		return "", fmt.Errorf("unsupported template format: %s", p.TemplateFormat)
+	}
+
+	tmpl, err := template.New("prompt").Parse(p.Template)
+	if err != nil {
+		return "", err
+	}
+
+	var sb strings.Builder
+	err = tmpl.Execute(&sb, kwargs)
+	if err != nil {
+		return "", err
+	}
+
+	return sb.String(), nil
+}
+
+func NewPromptTemplate(inputVariables []string, tmpl string, partialVariables []string) *PromptTemplate {
 	return &PromptTemplate{
-		Template:       template,
-		InputVariables: inputVariables,
+		InputVariables:   inputVariables,
+		Template:         tmpl,
+		TemplateFormat:   "f-string",
+		ValidateTemplate: true,
+		PartialVariables: partialVariables,
 	}
 }
 
-func (pt *PromptTemplate) FormatTemplate() (string, error) {
-	// Create a regex pattern to match the placeholder format
-	placeholderPattern := regexp.MustCompile(`\{\{\s*(\w+)\s*\}\}`)
-
-	for _, variable := range pt.InputVariables {
-		// Find the next placeholder in the template
-		match := placeholderPattern.FindStringSubmatch(pt.Template)
-		if match == nil {
-			return "", fmt.Errorf("insufficient placeholders in template")
-		}
-		placeholder := match[0]
-
-		// Replace the placeholder with the variable in the template
-		pt.Template = strings.Replace(pt.Template, placeholder, variable, 1)
+func PromptTemplateFromFile(templateFile string, inputVariables []string) (*PromptTemplate, error) {
+	templateBytes, err := ioutil.ReadFile(templateFile)
+	if err != nil {
+		return nil, err
 	}
 
-	// Check if there are any remaining placeholders in the template
-	if placeholderPattern.MatchString(pt.Template) {
-		return "", fmt.Errorf("insufficient input variables for template")
-	}
-
-	return pt.Template, nil
+	templateStr := string(templateBytes)
+	return NewPromptTemplate(inputVariables, templateStr, nil), nil
 }
