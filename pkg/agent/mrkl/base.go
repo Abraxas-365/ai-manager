@@ -91,15 +91,13 @@ func (z *ZeroShotAgent) Run(input string) string {
 		//creat un chain y enviarlo
 		chain := chains.NewChain(z.agent.Llm, newPrompt)
 		output, _ = chain.Run(output, []string{"\nObservation:", "\n\tObservation"})
-		fmt.Println(output)
 	}
 	return ""
 }
 
 func checkTools(action string, actionInput string, tools []tools.Tool) string {
 	for _, tool := range tools {
-		fmt.Println("TOOLS", tool.Name())
-		if tool.Name() == action {
+		if tool.Name() == strings.Trim(action, " ") {
 			return tool.Run(actionInput)
 		}
 	}
