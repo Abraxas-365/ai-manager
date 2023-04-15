@@ -25,9 +25,8 @@ func NewSerpapiWrapper() (*SerpapiWrapper, error) {
 	params := url.Values{}
 	params.Add("engine", "google")
 	params.Add("google_domain", "google.com")
-	params.Add("gl", "us")
+	params.Add("gl", "pe")
 	params.Add("hl", "en")
-	params.Add("q", "Coffee")
 	params.Add("api_key", apiKey)
 	return &SerpapiWrapper{
 			params: params,
@@ -37,7 +36,7 @@ func NewSerpapiWrapper() (*SerpapiWrapper, error) {
 
 func (s *SerpapiWrapper) Search(query string) (string, error) {
 	baseURL := "https://serpapi.com/search"
-	s.params.Set("q", query)
+	s.params.Add("q", query)
 
 	reqURL := fmt.Sprintf("%s?%s", baseURL, s.params.Encode())
 	resp, err := http.Get(reqURL)
