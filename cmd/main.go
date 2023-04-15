@@ -2,50 +2,39 @@ package main
 
 import (
 	"fmt"
-	"strings"
 
-	"github.com/Abraxas-365/ai-manager/pkg/prompt"
+	"github.com/Abraxas-365/ai-manager/pkg/agent/mrkl"
+	"github.com/Abraxas-365/ai-manager/pkg/openai"
+	"github.com/Abraxas-365/ai-manager/pkg/tools"
+	"github.com/Abraxas-365/ai-manager/pkg/tools/googlesearch"
 )
 
 func main() {
-	inputVariables := []string{"test"}
-	tmpl := `The available tools are:
-{{.tool_names}}
-
-Descriptions:
-{{.tool_descriptions}}
-	{{.test}}
-`
-
-	tools := []struct {
-		Name        string
-		Description string
-	}{
-		{"ToolA", "Tool A does something awesome."},
-		{"ToolB", "Tool B does something even more awesome."},
-	}
-
-	var toolNames []string
-	var toolDescriptions []string
-	for _, tool := range tools {
-		toolNames = append(toolNames, tool.Name)
-		toolDescriptions = append(toolDescriptions, fmt.Sprintf("%s: %s", tool.Name, tool.Description))
-	}
-
-	partialVariables := map[string]interface{}{
-		"tool_names":        strings.Join(toolNames, ", "),
-		"tool_descriptions": strings.Join(toolDescriptions, "\n"),
-	}
-
-	pt := prompt.NewPromptTemplate(inputVariables, tmpl, partialVariables)
-
-	formatted, err := pt.Format(map[string]interface{}{
-		"test": "test",
-	})
+	//Declaro que Large lenguage model quiero usar
+	llm, err := openai.NewCompletition(
+		openai.NewCompletitonConfigConstructor().
+			AddMaxTokens(60).
+			AddModel(openai.TextDavinchi3).
+			AddTemperature(0).
+			Build(),
+	)
 	if err != nil {
-		fmt.Println("Error:", err)
-		return
+		fmt.Println(err)
 	}
 
-	fmt.Println(formatted)
+	//Declaro las herramientas que voy a usar,
+	//Wrapper de api de google search
+	googleSearchTool, err := googlesearch.NewSearchTool()
+	if err != nil {
+		fmt.Println(err)
+	}
+	//Declaro el agente con las herramientas que tiene a su disposicion
+	//No necesariemanete las va a usar
+	agent := mrkl.FromLlmAndTools(llm, []tools.Tool{googleSearchTool})
+	if err != nil {
+		fmt.Println(err)
+	}
+	//Hacerle la pregunta al agente
+	answer := agent.Run("Who is the president of peru right now")
+	fmt.Println(answer)
 }

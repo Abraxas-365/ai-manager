@@ -23,13 +23,14 @@ type CompletionResponse struct {
 	Model string `json:"model"`
 }
 
-func (c *Client) GetCompletion(prompt string, maxTokens int, temperature float32, model ModelCompletition) (string, error) {
+func (c *Client) getCompletion(prompt string, maxTokens int, temperature float32, model ModelCompletition, stop []string) (string, error) {
 	apiURL := "https://api.openai.com/v1/completions"
-	data := map[string]interface{}{
-		"model":       model,
-		"prompt":      prompt,
-		"max_tokens":  maxTokens,
-		"temperature": temperature,
+	data := Data{
+		Model:       string(model),
+		Temperature: temperature,
+		Stop:        stop,
+		Prompt:      prompt,
+		MaxTokens:   maxTokens,
 	}
 	jsonData, err := json.Marshal(data)
 	if err != nil {

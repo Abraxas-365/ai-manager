@@ -16,7 +16,7 @@ type EmbeddingResponse struct {
 	Model string `json:"model"`
 }
 
-func (c *Client) GetEmbedding(paragraph string) ([]float32, error) {
+func (c *Client) getEmbedding(paragraph string) ([]float32, error) {
 	apiURL := "https://api.openai.com/v1/embeddings" // Update the API endpoint
 	data := map[string]string{
 		"input": paragraph,

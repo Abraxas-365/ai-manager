@@ -16,46 +16,46 @@ type PromptTemplate struct {
 }
 
 type PromptTemplateBuilder struct {
-	InputVariables   []string
-	Template         string
-	PartialVariables map[string]interface{}
+	inputVariables   []string
+	template         string
+	partialVariables map[string]interface{}
 }
 
-type IPromptTemplateBuilder interface {
-	AddInputVariables([]string) IPromptTemplateBuilder
-	AddTemplate(string) IPromptTemplateBuilder
-	AddPartialVariables(map[string]interface{}) IPromptTemplateBuilder
+type promptTemplateBuilder interface {
+	AddInputVariables([]string) promptTemplateBuilder
+	AddTemplate(string) promptTemplateBuilder
+	AddPartialVariables(map[string]interface{}) promptTemplateBuilder
 	Build() PromptTemplate
 }
 
 func NewPromptTemplateBuilder() *PromptTemplateBuilder {
 	return &PromptTemplateBuilder{
-		PartialVariables: nil,
-		InputVariables:   nil,
+		partialVariables: nil,
+		inputVariables:   nil,
 	}
 }
-func (b *PromptTemplateBuilder) AddInputVariables(inputVariables []string) IPromptTemplateBuilder {
-	b.InputVariables = inputVariables
+func (b *PromptTemplateBuilder) AddInputVariables(inputVariables []string) promptTemplateBuilder {
+	b.inputVariables = inputVariables
 	return b
 }
 
-func (b *PromptTemplateBuilder) AddTemplate(template string) IPromptTemplateBuilder {
-	b.Template = template
+func (b *PromptTemplateBuilder) AddTemplate(template string) promptTemplateBuilder {
+	b.template = template
 	return b
 }
 
-func (b *PromptTemplateBuilder) AddPartialVariables(partialVariables map[string]interface{}) IPromptTemplateBuilder {
-	b.PartialVariables = partialVariables
+func (b *PromptTemplateBuilder) AddPartialVariables(partialVariables map[string]interface{}) promptTemplateBuilder {
+	b.partialVariables = partialVariables
 	return b
 }
 
 func (b *PromptTemplateBuilder) Build() PromptTemplate {
 	return PromptTemplate{
-		InputVariables:   b.InputVariables,
-		Template:         b.Template,
+		InputVariables:   b.inputVariables,
+		Template:         b.template,
 		TemplateFormat:   "f-string",
 		ValidateTemplate: true,
-		PartialVariables: b.PartialVariables,
+		PartialVariables: b.partialVariables,
 	}
 
 }

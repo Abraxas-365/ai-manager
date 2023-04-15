@@ -15,11 +15,6 @@ const (
 	GPT35Turbo ModelChat = "gpt-3.5-turbo"
 )
 
-type Message struct {
-	Role    string `json:"role"`
-	Content string `json:"content"`
-}
-
 type ChatCompletionResponse struct {
 	ID      string `json:"id"`
 	Object  string `json:"object"`
@@ -35,13 +30,15 @@ type ChatCompletionResponse struct {
 	} `json:"choices"`
 }
 
-func (c *Client) GetChatCompletion(messages []Message, temperature float32, model ModelChat) (string, error) {
+func (c *Client) getChatCompletion(messages []Message, temperature float32, model ModelChat, stop []string) (string, error) {
 	apiURL := "https://api.openai.com/v1/chat/completions"
-	data := map[string]interface{}{
-		"model":       model,
-		"messages":    messages,
-		"temperature": temperature,
+	data := Data{
+		Model:       string(model),
+		Temperature: temperature,
+		Stop:        stop,
+		Messages:    messages,
 	}
+
 	jsonData, err := json.Marshal(data)
 	if err != nil {
 		return "", err
@@ -61,7 +58,8 @@ func (c *Client) GetChatCompletion(messages []Message, temperature float32, mode
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return "", errors.New("API request failed")
+		body, _ := ioutil.ReadAll(resp.Body)
+		return "", errors.New("API request failed" + string(body))
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
