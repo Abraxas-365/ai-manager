@@ -1,18 +1,17 @@
 package bash
 
 import (
+	"fmt"
 	"os/exec"
-	"strings"
 )
 
 func executeBash(bashCommand string) error {
 
-	parts := strings.Fields(bashCommand)
+	cmd := exec.Command("sh", "-c", bashCommand)
+	combinedOutput, err := cmd.CombinedOutput()
 
-	// Execute the command
-	cmd := exec.Command(parts[0], parts[1:]...)
-	if _, err := cmd.CombinedOutput(); err != nil {
-		return err
+	if err != nil {
+		return fmt.Errorf("command execution failed: %v\noutput: %s", err, string(combinedOutput))
 	}
 
 	return nil
