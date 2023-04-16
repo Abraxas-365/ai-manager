@@ -70,7 +70,7 @@ func (o *LLMChat) Generate(prompts []string, stop []string) ([]string, error) {
 			return nil, err
 		}
 		messages = append(messages, Message{Role: "assistant", Content: result})
-		completitions = append(completitions, message.Content)
+		completitions = append(completitions, result)
 	}
 
 	return completitions, nil

@@ -5,6 +5,7 @@ import (
 	"github.com/Abraxas-365/ai-manager/pkg/utils/serpapi"
 )
 
+//Its not working good
 type LinkednProfileInfo struct {
 	name        string
 	description string

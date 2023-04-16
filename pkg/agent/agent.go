@@ -43,7 +43,7 @@ func GetObservation(action string, actionInput string, tools []tools.Tool) strin
 			return "\nObservation: " + tool.Run(actionInput) + "\n"
 		}
 	}
-	return "There is no Tools for the task"
+	return ""
 }
 
 func IsAnswer(text string) (bool, string) {
