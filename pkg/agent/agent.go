@@ -25,7 +25,7 @@ func FromLlmAndTools(llm llm.LLM, chain chains.Chain, tools []tools.Tool, prompt
 	}
 }
 
-func GetActionInput(input string) (action, actionInput string) {
+func GetActionAndInput(input string) (action, actionInput string) {
 	fields := strings.Split(input, "\n")
 	for _, field := range fields {
 		if strings.HasPrefix(field, "Action: ") {
