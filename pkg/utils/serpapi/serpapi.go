@@ -62,6 +62,47 @@ func (s *SerpapiWrapper) Search(query string) (string, error) {
 
 }
 
+func (s *SerpapiWrapper) SearchTitle(query string) (string, error) {
+	baseURL := "https://serpapi.com/search"
+	s.params.Add("q", query)
+
+	reqURL := fmt.Sprintf("%s?%s", baseURL, s.params.Encode())
+	resp, err := http.Get(reqURL)
+	if err != nil {
+		fmt.Printf("Error: %s\n", err)
+		return "", err
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		fmt.Printf("Error: %s\n", err)
+		return "", err
+	}
+	var result map[string]interface{}
+	err = json.Unmarshal([]byte(body), &result)
+	if err != nil {
+		fmt.Printf("Error: %s\n", err)
+		return "", err
+	}
+	return processTitle(result)
+}
+
+func processTitle(res map[string]interface{}) (string, error) {
+
+	organicResults, organicResultsExists := res["organic_results"].([]interface{})
+	if organicResultsExists && len(organicResults) > 0 {
+		organicResult, ok := organicResults[0].(map[string]interface{})
+		if ok {
+			if title, ok := organicResult["title"].(string); ok {
+				return title, nil
+			}
+		}
+	}
+
+	return "No good search result found", nil
+}
+
 func processResponse(res map[string]interface{}) (string, error) {
 	if errorValue, ok := res["error"]; ok {
 		return "", fmt.Errorf("Got error from SerpAPI: %v", errorValue)
