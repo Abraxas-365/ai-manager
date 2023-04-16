@@ -1,6 +1,6 @@
 package mrkl
 
-const PREFIX = "Answer the following questions as best you can. You have access to the following tools:"
+const PREFIX = `Answer the following questions as best you can. You have access to the following tools use them in priority order :`
 const FORMAT_INSTRUCTIONS = `Use the following format:
 
 Question: the input question you must answer

@@ -10,10 +10,11 @@ type BashTool struct {
 func NewBashTool() tools.Tool {
 	return &BashTool{
 		name: "Bash",
-		description: `"A guide for common Bash commands and their usage. "
-		"Useful for when you need assistance with navigating or manipulating files and directories in a Unix-based system."
-		"Input should be a command or a description of the task you want to perform."
-		"If you want to create a space-separated forder use '_' instead of spaces"
+		description: `"Executes commands in a terminal". 
+		"Input should be valid Linux command"
+		"if you want to write a name use '_' instead of ' '. "
+		"Use it  as a helper check if needed to run a tool before this one"
+		"Priority: 3"
 		`,
 	}
 
