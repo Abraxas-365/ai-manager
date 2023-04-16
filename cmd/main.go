@@ -13,7 +13,7 @@ func main() {
 	//Declaro que Large lenguage model quiero usar
 	llm, err := openai.NewCompletition(
 		openai.NewCompletitonConfigConstructor().
-			AddMaxTokens(60).
+			AddMaxTokens(500).
 			AddModel(openai.TextDavinchi3).
 			AddTemperature(0).
 			Build(),
@@ -35,6 +35,10 @@ func main() {
 		fmt.Println(err)
 	}
 	//Hacerle la pregunta al agente
-	answer := agent.Run("Who is the president of peru right now")
-	fmt.Println(answer)
+	//Pregunta de actualidad, peru a cambiado de presidente muchas veces
+	//Si le preguntamos a ChatGPT nos va a decir Pedro castillo
+	answer := agent.Run("who is the president of the peru and when was she born?")
+	fmt.Println("\n",
+		"ESta es la respuesta de la IA: ",
+		answer)
 }

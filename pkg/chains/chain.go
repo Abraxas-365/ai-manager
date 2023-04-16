@@ -16,11 +16,7 @@ func NewChain(llm llm.LLM, prompt prompt.PromptTemplate) Chain {
 
 func (c *Chain) Run(inputVariable string, stop []string) (string, error) {
 
-	completePrompt, err := c.prompt.Format(
-		map[string]interface{}{
-			c.prompt.InputVariables[0]: inputVariable,
-		},
-	)
+	completePrompt, err := c.prompt.Format([]string{inputVariable}, nil)
 	if err != nil {
 		return "", err
 	}

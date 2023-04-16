@@ -60,13 +60,25 @@ func (b *PromptTemplateBuilder) Build() PromptTemplate {
 
 }
 
-func (p *PromptTemplate) Format(kwargs map[string]interface{}) (string, error) {
+func (p *PromptTemplate) Format(args []string, kwargs map[string]interface{}) (string, error) {
+	if kwargs == nil {
+		kwargs = make(map[string]interface{})
+	}
 	if p.TemplateFormat != "f-string" {
 		return "", fmt.Errorf("unsupported template format: %s", p.TemplateFormat)
 	}
-
+	if args != nil {
+		for i, v := range p.InputVariables {
+			if i < len(args) {
+				kwargs[v] = args[i]
+				continue
+			}
+			kwargs[v] = ""
+		}
+	}
 	for k, v := range p.PartialVariables {
 		kwargs[k] = v
+
 	}
 
 	tmpl, err := template.New("prompt").Funcs(template.FuncMap{

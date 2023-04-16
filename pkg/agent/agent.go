@@ -36,7 +36,7 @@ func FromLlmAndTools(llm llm.LLM, chain chains.Chain, tools []tools.Tool, prompt
 	}
 }
 
-func (a *Agent) ParseActionInput(input string) (action, actionInput string) {
+func ParseActionInput(input string) (action, actionInput string) {
 	fields := strings.Split(input, "\n")
 	for _, field := range fields {
 		if strings.HasPrefix(field, "Action: ") {
@@ -46,6 +46,15 @@ func (a *Agent) ParseActionInput(input string) (action, actionInput string) {
 		}
 	}
 	return action, actionInput
+}
+
+func ValidateTools(action string, actionInput string, tools []tools.Tool) string {
+	for _, tool := range tools {
+		if tool.Name() == strings.Trim(action, " ") {
+			return tool.Run(actionInput)
+		}
+	}
+	return "There is no Tools for the task"
 }
 
 type AgentInterface interface {

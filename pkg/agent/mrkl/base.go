@@ -51,9 +51,7 @@ func createPrompt(
 
 	template := strings.Join([]string{PREFIX, toolString, formatInstructions, SUFFIX}, "\n\n")
 
-	return prompt.NewPromptTemplateBuilder().AddTemplate(template).AddInputVariables([]string{"input"}).AddPartialVariables(map[string]interface{}{
-		"agent_scratchpad": "",
-	}).Build()
+	return prompt.NewPromptTemplateBuilder().AddTemplate(template).AddInputVariables([]string{"input", "agent_scratchpad"}).Build()
 
 }
 
@@ -80,8 +78,8 @@ func (z *ZeroShotAgent) Run(input string) string {
 			return answer
 		}
 		//necesito hacer un parser para obtener el toll y el action y todo el aoutout es el scratchpad
-		action, actionInput := z.agent.ParseActionInput(output)       //esto lo tengo que enviar a los tools , esto me va a devolver el observation
-		observation := checkTools(action, actionInput, z.agent.Tools) //necesito concatenar esto al output
+		action, actionInput := agent.ParseActionInput(output)                  //esto lo tengo que enviar a los tools , esto me va a devolver el observation
+		observation := agent.ValidateTools(action, actionInput, z.agent.Tools) //necesito concatenar esto al output
 		output = output + "\nObservation: " + observation + "\n"
 		fmt.Println("step", output)
 		//crear el nuevo promp que contenga el scratchpad
@@ -95,14 +93,6 @@ func (z *ZeroShotAgent) Run(input string) string {
 	return ""
 }
 
-func checkTools(action string, actionInput string, tools []tools.Tool) string {
-	for _, tool := range tools {
-		if tool.Name() == strings.Trim(action, " ") {
-			return tool.Run(actionInput)
-		}
-	}
-	return "There is no Tools for the task"
-}
 func findFinalAnswer(text string) string {
 	finalAnswerPrefix := "Final Answer:"
 	startIndex := strings.Index(text, finalAnswerPrefix)
