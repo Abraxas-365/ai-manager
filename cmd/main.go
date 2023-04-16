@@ -10,6 +10,7 @@ import (
 	"github.com/Abraxas-365/ai-manager/pkg/tools/bash"
 	"github.com/Abraxas-365/ai-manager/pkg/tools/googlesearch"
 	"github.com/Abraxas-365/ai-manager/pkg/tools/linkedin"
+	"github.com/Abraxas-365/ai-manager/pkg/tools/wikipedia"
 )
 
 func main() {
@@ -20,17 +21,17 @@ func main() {
 
 	input := os.Args[1]
 	//Declaro que Large lenguage model quiero usar
-	// llm, err := openai.NewCompletition(
-	// 	openai.NewCompletitonConfigConstructor().
-	// 		AddMaxTokens(100).
-	// 		AddModel(openai.TextDavinchi3).
-	// 		AddTemperature(0).
-	// 		Build(),
-	// )
-	// if err != nil {
-	// 	fmt.Println(err)
-	// }
-	llm, err := openai.NewChat(openai.NewChatConfigConstructor().Build())
+	llm, err := openai.NewCompletition(
+		openai.NewCompletitonConfigConstructor().
+			AddMaxTokens(100).
+			AddModel(openai.TextDavinchi3).
+			AddTemperature(0).
+			Build(),
+	)
+	if err != nil {
+		fmt.Println(err)
+	}
+	// llm, err := openai.NewChat(openai.NewChatConfigConstructor().Build())
 
 	//Declaro las herramientas que voy a usar,
 	//Wrapper de api de google search
@@ -42,9 +43,10 @@ func main() {
 	bashTool := bash.NewBashTool()
 
 	linkedinTool, err := linkedin.NewLinkednProfileInfo()
+	wikipedia := wikipedia.NewWikipediaTool()
 	//Declaro el agente con las herramientas que tiene a su disposicion
 	//No necesariemanete las va a usar
-	agent := mrkl.NewZeroShotAgent(llm, []tools.Tool{googleSearchTool, bashTool, linkedinTool})
+	agent := mrkl.NewZeroShotAgent(llm, []tools.Tool{googleSearchTool, bashTool, linkedinTool, wikipedia})
 	if err != nil {
 		fmt.Println(err)
 	}

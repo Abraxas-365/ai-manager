@@ -11,9 +11,11 @@ func NewBashTool() tools.Tool {
 	return &BashTool{
 		name: "Bash",
 		description: `"Executes commands in a terminal". 
-		"Input should be valid Linux command"
+		"Input should be valid Linux command only one command"
+		"If you want to write into a file you can only use >> or >"
 		"if you want to write a name use '_' instead of ' '. "
 		"Use it  as a helper check if needed to run a tool before this one"
+		"Use """ istedad of '''"
 		"Priority: 3"
 		`,
 	}
@@ -30,7 +32,7 @@ func (s *BashTool) Description() string {
 
 func (s *BashTool) Run(query string) string {
 	if err := executeBash(query); err != nil {
-		return "Comand could not be executed"
+		return err.Error()
 	}
 
 	return "Comand executed and task finished with success"

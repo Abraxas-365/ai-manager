@@ -25,7 +25,6 @@ func NewSerpapiWrapper() (*SerpapiWrapper, error) {
 	params := url.Values{}
 	params.Add("engine", "google")
 	params.Add("google_domain", "google.com")
-	params.Add("gl", "pe")
 	params.Add("hl", "en")
 	params.Add("api_key", apiKey)
 	return &SerpapiWrapper{
