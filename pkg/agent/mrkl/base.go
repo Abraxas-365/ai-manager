@@ -72,43 +72,22 @@ func (z *ZeroShotAgent) Run(input string) string {
 
 	output, _ := z.agent.Chain.Run(input, []string{"\nObservation:", "\n\tObservation"}) //esto va a devolver el lo que continua del tough + action
 	for true {
-
-		answer := findFinalAnswer(output)
-		if answer != "" {
+		if isAnswer, answer := agent.IsAnswer(output); isAnswer {
 			return answer
 		}
-		//necesito hacer un parser para obtener el toll y el action y todo el aoutout es el scratchpad
-		action, actionInput := agent.ParseActionInput(output)                  //esto lo tengo que enviar a los tools , esto me va a devolver el observation
-		observation := agent.ValidateTools(action, actionInput, z.agent.Tools) //necesito concatenar esto al output
-		output = output + "\nObservation: " + observation + "\n"
+		//pasos intermedios
+		action, actionInput := agent.GetActionInput(output)
+		observation := agent.GetObservation(action, actionInput, z.agent.Tools)
+		scratchpad := output + observation
 		fmt.Println("step", output)
+
 		//crear el nuevo promp que contenga el scratchpad
 		newPrompt := prompt.NewPromptTemplateBuilder().AddTemplate(z.agent.Prompt.Template).AddPartialVariables(map[string]interface{}{
 			"input": input,
 		}).AddInputVariables([]string{"agent_scratchpad"}).Build()
 		//creat un chain y enviarlo
 		chain := chains.NewChain(z.agent.Llm, newPrompt)
-		output, _ = chain.Run(output, []string{"\nObservation:", "\n\tObservation"})
+		output, _ = chain.Run(scratchpad, []string{"\nObservation:", "\n\tObservation"})
 	}
 	return ""
-}
-
-func findFinalAnswer(text string) string {
-	finalAnswerPrefix := "Final Answer:"
-	startIndex := strings.Index(text, finalAnswerPrefix)
-
-	if startIndex == -1 {
-		return ""
-	}
-
-	startIndex += len(finalAnswerPrefix)
-	text = text[startIndex:]
-
-	endIndex := strings.Index(text, "\n")
-
-	if endIndex != -1 {
-		text = text[:endIndex]
-	}
-
-	return strings.TrimSpace(text)
 }
