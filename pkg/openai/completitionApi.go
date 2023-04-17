@@ -31,6 +31,7 @@ func (c *Client) getCompletion(prompt string, maxTokens int, temperature float32
 		Stop:        stop,
 		Prompt:      prompt,
 		MaxTokens:   maxTokens,
+		TopP:        1,
 	}
 	jsonData, err := json.Marshal(data)
 	if err != nil {

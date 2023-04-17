@@ -1,6 +1,10 @@
 package wikipedia
 
-import "github.com/Abraxas-365/ai-manager/pkg/tools"
+import (
+	"strings"
+
+	"github.com/Abraxas-365/ai-manager/pkg/tools"
+)
 
 type WikipediaTool struct {
 	name        string
@@ -12,10 +16,11 @@ func NewWikipediaTool() tools.Tool {
 		name: "Wikipedia",
 		description: `
         "A wrapper around Wikipedia. "
+		"Useful for when you  need Biographys"
         "Useful for when you need to answer general questions about "
         "people, places, companies, historical events, or other subjects. "
         "Input should be a search query."
-		"Priority: 1"
+		"Priority: 1.5"
 		`,
 	}
 
@@ -34,5 +39,5 @@ func (s *WikipediaTool) Run(query string) string {
 	if err != nil {
 		return "No good Wikipedia Search Result was found"
 	}
-	return resutl
+	return strings.Trim(strings.Trim(resutl, "\n"), " ")
 }

@@ -24,6 +24,7 @@ type Data struct {
 	Prompt      string    `json:"prompt,omitempty"`
 	Stop        []string  `json:"stop,omitempty"`
 	MaxTokens   int       `json:"max_tokens,omitempty"`
+	TopP        float64   `json:"top_p,omitempty"`
 }
 
 var ErrEmptyResponse = errors.New("no response")

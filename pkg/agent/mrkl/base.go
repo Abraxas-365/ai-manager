@@ -50,28 +50,23 @@ func createPrompt(
 }
 
 func (z *ZeroShotAgent) Run(input string) string {
-
-	output, _ := z.agent.Chain.Run(input, []string{"\nObservation:", "\n\tObservation"})
+	output, _ := z.agent.Chain.Run(input, []string{"Observation:"})
 	scratchpad := ""
 	currentThought := ""
-	for true {
-		if isAnswer, answer := agent.IsAnswer(output); isAnswer {
-			return answer
-		}
-
-		//pasos intermedios
+	for {
 		action, actionInput := agent.GetActionAndInput(output)
 		observation := agent.GetObservation(action, actionInput, z.agent.Tools)
-		currentThought = output + observation + "\n"
+		currentThought = output + observation
 		fmt.Println(currentThought)
-		scratchpad = scratchpad + output + observation + "\n"
-		//crear el nuevo promp que contenga el scratchpad
+		scratchpad = scratchpad + output + observation
+		if output == "" {
+			result := agent.GetFinalAnswer(scratchpad)
+			return result
+		}
 		newPrompt := prompt.NewPromptTemplateBuilder().AddTemplate(z.agent.Prompt.Template).AddPartialVariables(map[string]interface{}{
 			"input": input,
 		}).AddInputVariables([]string{"agent_scratchpad"}).Build()
-		//creat un chain y enviarlo
 		chain := chains.NewChain(z.agent.Llm, newPrompt)
-		output, _ = chain.Run(scratchpad, []string{"\nObservation:", "\n\tObservation"})
+		output, _ = chain.Run(scratchpad, []string{"Observation:"})
 	}
-	return ""
 }

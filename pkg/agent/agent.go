@@ -40,30 +40,25 @@ func GetActionAndInput(input string) (action, actionInput string) {
 func GetObservation(action string, actionInput string, tools []tools.Tool) string {
 	for _, tool := range tools {
 		if tool.Name() == strings.Trim(action, " ") {
-			return "\nObservation: " + tool.Run(actionInput) + "\n"
+			observation := "\nObservation:" + tool.Run(actionInput)
+			return observation
+
 		}
 	}
 	return ""
 }
 
-func IsAnswer(text string) (bool, string) {
+func GetFinalAnswer(text string) string {
 	finalAnswerPrefix := "Final Answer:"
 	startIndex := strings.Index(text, finalAnswerPrefix)
 
 	if startIndex == -1 {
-		return false, ""
+		return ""
 	}
-
 	startIndex += len(finalAnswerPrefix)
 	text = text[startIndex:]
-
-	endIndex := strings.Index(text, "\n")
-
-	if endIndex != -1 {
-		text = text[:endIndex]
-	}
-
-	return true, strings.TrimSpace(text)
+	trimmed := strings.Join(strings.Fields(text), " ")
+	return trimmed
 }
 
 type AgentInterface interface {

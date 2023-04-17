@@ -26,7 +26,7 @@ type chatConfigConstructor interface {
 
 func NewChatConfigConstructor() *ChatConfigConstructor {
 	return &ChatConfigConstructor{
-		temperature: 0.0,
+		temperature: 0,
 		model:       GPT35Turbo,
 	}
 }

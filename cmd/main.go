@@ -7,10 +7,7 @@ import (
 	"github.com/Abraxas-365/ai-manager/pkg/agent/mrkl"
 	"github.com/Abraxas-365/ai-manager/pkg/openai"
 	"github.com/Abraxas-365/ai-manager/pkg/tools"
-	"github.com/Abraxas-365/ai-manager/pkg/tools/bash"
 	"github.com/Abraxas-365/ai-manager/pkg/tools/googlesearch"
-	"github.com/Abraxas-365/ai-manager/pkg/tools/linkedin"
-	"github.com/Abraxas-365/ai-manager/pkg/tools/wikipedia"
 )
 
 func main() {
@@ -23,7 +20,7 @@ func main() {
 	//Declaro que Large lenguage model quiero usar
 	llm, err := openai.NewCompletition(
 		openai.NewCompletitonConfigConstructor().
-			AddMaxTokens(100).
+			AddMaxTokens(260).
 			AddModel(openai.TextDavinchi3).
 			AddTemperature(0).
 			Build(),
@@ -40,13 +37,9 @@ func main() {
 		fmt.Println(err)
 	}
 
-	bashTool := bash.NewBashTool()
-
-	linkedinTool, err := linkedin.NewLinkednProfileInfo()
-	wikipedia := wikipedia.NewWikipediaTool()
 	//Declaro el agente con las herramientas que tiene a su disposicion
 	//No necesariemanete las va a usar
-	agent := mrkl.NewZeroShotAgent(llm, []tools.Tool{googleSearchTool, bashTool, linkedinTool, wikipedia})
+	agent := mrkl.NewZeroShotAgent(llm, []tools.Tool{googleSearchTool})
 	if err != nil {
 		fmt.Println(err)
 	}

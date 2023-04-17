@@ -24,7 +24,7 @@ func NewCompletitonConfigConstructor() *CompletitionConfigConstructor {
 	return &CompletitionConfigConstructor{
 		temperature: 0,
 		model:       TextDavinchi3,
-		maxTokens:   60,
+		maxTokens:   1000,
 	}
 }
 
