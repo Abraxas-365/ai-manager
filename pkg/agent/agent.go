@@ -40,7 +40,7 @@ func GetActionAndInput(input string) (action, actionInput string) {
 func GetObservation(action string, actionInput string, tools []tools.Tool) string {
 	for _, tool := range tools {
 		if tool.Name() == strings.Trim(action, " ") {
-			observation := "\nObservation:" + tool.Run(actionInput)
+			observation := "\nObservation: " + tool.Run(actionInput) + "\n"
 			return observation
 
 		}

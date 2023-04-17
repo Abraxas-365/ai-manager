@@ -1,6 +1,9 @@
 package googlesearch
 
 import (
+	"fmt"
+	"strings"
+
 	"github.com/Abraxas-365/ai-manager/pkg/tools"
 	"github.com/Abraxas-365/ai-manager/pkg/utils/serpapi"
 )
@@ -41,6 +44,8 @@ func (s *SearchTool) Run(query string) string {
 	if len(result) == 0 {
 		return "No good Google Search Result was found"
 	}
+	fmt.Println("QUERY", query)
+	fmt.Println("RESULT", strings.Join(strings.Fields(result), " "))
+	return strings.Join(strings.Fields(result), " ")
 
-	return result
 }

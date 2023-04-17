@@ -50,7 +50,7 @@ func createPrompt(
 }
 
 func (z *ZeroShotAgent) Run(input string) string {
-	output, _ := z.agent.Chain.Run(input, []string{"Observation:"})
+	output, _ := z.agent.Chain.Run(input, []string{"\nObservation:", "\n\tObservation:"})
 	scratchpad := ""
 	currentThought := ""
 	for {
@@ -67,6 +67,6 @@ func (z *ZeroShotAgent) Run(input string) string {
 			"input": input,
 		}).AddInputVariables([]string{"agent_scratchpad"}).Build()
 		chain := chains.NewChain(z.agent.Llm, newPrompt)
-		output, _ = chain.Run(scratchpad, []string{"Observation:"})
+		output, _ = chain.Run(scratchpad, []string{"\nObservation:", "\n\tObservation:"})
 	}
 }

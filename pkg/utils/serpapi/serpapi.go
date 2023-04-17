@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 )
 
 var ErrMissingToken = errors.New("missing the OpenAI API key, set it in the OPENAI_API_KEY environment variable")
@@ -23,8 +24,8 @@ func NewSerpapiWrapper() (*SerpapiWrapper, error) {
 	}
 
 	params := url.Values{}
-	params.Add("engine", "google")
 	params.Add("google_domain", "google.com")
+	params.Add("gl", "us")
 	params.Add("hl", "en")
 	params.Add("api_key", apiKey)
 	return &SerpapiWrapper{
@@ -35,7 +36,8 @@ func NewSerpapiWrapper() (*SerpapiWrapper, error) {
 
 func (s *SerpapiWrapper) Search(query string) (string, error) {
 	baseURL := "https://serpapi.com/search"
-	s.params.Add("q", query)
+	query = strings.ReplaceAll(query, " ", "+")
+	s.params.Set("q", query)
 
 	reqURL := fmt.Sprintf("%s?%s", baseURL, s.params.Encode())
 	resp, err := http.Get(reqURL)
@@ -63,7 +65,7 @@ func (s *SerpapiWrapper) Search(query string) (string, error) {
 
 func (s *SerpapiWrapper) SearchTitle(query string) (string, error) {
 	baseURL := "https://serpapi.com/search"
-	s.params.Add("q", query)
+	s.params.Set("q", query)
 
 	reqURL := fmt.Sprintf("%s?%s", baseURL, s.params.Encode())
 	resp, err := http.Get(reqURL)
@@ -117,6 +119,7 @@ func processResponse(res map[string]interface{}) (string, error) {
 			return answer, nil
 		}
 		if snippet, ok := answerBox["snippet"].(string); ok {
+
 			return snippet, nil
 		}
 		if snippetHighlightedWords, ok := answerBox["snippet_highlighted_words"].([]interface{}); ok && len(snippetHighlightedWords) > 0 {
